@@ -21,21 +21,7 @@
  function setIntersect(a, b) {
      return new Set([...a].filter(item => b.has(item)));
  }
- function neighbors(x, y) {
-     return [
-         // adjacent
-         Array.isArray(board[y-1]) && board[y-1][x],
-         Array.isArray(board[y])   && board[y][x-1],
-         Array.isArray(board[y+1]) && board[y+1][x],
-         Array.isArray(board[y])   && board[y][x+1],
-         //diagonal
-         Array.isArray(board[y-1]) && board[y-1][x-1],
-         Array.isArray(board[y-1]) && board[y-1][x+1],
-         Array.isArray(board[y+1]) && board[y+1][x-1],
-         Array.isArray(board[y+1]) && board[y+1][x+1],
-     ];
- }
- function *neighborGen(x, y) {
+ function *neighbors(x, y) {
      if(Array.isArray(board[y-1])) board[y-1][x] = yield (board[y-1][x]);
      if(Array.isArray(board[y])  ) board[y][x-1] = yield board[y][x-1];
      if(Array.isArray(board[y+1])) board[y+1][x] = yield board[y+1][x];
@@ -47,7 +33,7 @@
  }
  function setBoard(x, y, elems) {
      board[y][x] = new Set(elems);
-     const n = neighborGen(x, y);
+     const n = neighbors(x, y);
      let res = n.next();
      while (!res.done) {
          const next = [...elems]
