@@ -65,7 +65,7 @@
      stop();
      interval = setInterval(() => {
          step();
-     }, 100);
+     }, 30);
  }
 </script>
 
