@@ -108,6 +108,7 @@
      justify-content: center;
      height: 100vh;
      font-size: calc(4vmin);
+     font-family: monospace;
  }
  .container > * {
      margin: .1em;
