@@ -15,8 +15,8 @@
      4: new Set([3, 4]),
  };
  let selected = 0;
- const board = new Array(10).fill().map(row => (
-     new Array(10).fill(new Set(colors.slice(1).map((c,i) => i+1)))
+ const board = new Array(20).fill().map(row => (
+     new Array(20).fill(new Set(colors.slice(1).map((c,i) => i+1)))
  ));
  function setIntersect(a, b) {
      return new Set([...a].filter(item => b.has(item)));
@@ -35,41 +35,41 @@
          Array.isArray(board[y+1]) && board[y+1][x+1],
      ];
  }
- function neighborGen(x, y) {
-     if(Array.isArray(board[y-1])) board[y-1][x];
-     if(Array.isArray(board[y])  ) board[y][x-1];
-     if(Array.isArray(board[y+1])) board[y+1][x];
-     if(Array.isArray(board[y])  ) board[y][x+1];
-     if(Array.isArray(board[y-1])) board[y-1][x-1];
-     if(Array.isArray(board[y-1])) board[y-1][x+1];
-     if(Array.isArray(board[y+1])) board[y+1][x-1];
-     if(Array.isArray(board[y+1])) board[y+1][x+1];
+ function *neighborGen(x, y) {
+     if(Array.isArray(board[y-1])) board[y-1][x] = yield (board[y-1][x]);
+     if(Array.isArray(board[y])  ) board[y][x-1] = yield board[y][x-1];
+     if(Array.isArray(board[y+1])) board[y+1][x] = yield board[y+1][x];
+     if(Array.isArray(board[y])  ) board[y][x+1] = yield board[y][x+1];
+     if(Array.isArray(board[y-1])) board[y-1][x-1] = yield board[y-1][x-1];
+     if(Array.isArray(board[y-1])) board[y-1][x+1] = yield board[y-1][x+1];
+     if(Array.isArray(board[y+1])) board[y+1][x-1] = yield board[y+1][x-1];
+     if(Array.isArray(board[y+1])) board[y+1][x+1] = yield board[y+1][x+1];
  }
  function setBoard(x, y, elems) {
-     board[y][x]
+     board[y][x] = new Set(elems);
+     const n = neighborGen(x, y);
+     let res = n.next();
+     while (!res.done) {
+         const next = [...elems]
+             .map(elem => rules[elem])
+             .reduce(setIntersect, res.value);
+         res = n.next([...next].length ? next : colors.map((c,i) => i).slice(1));
+     }
  }
  function step(event) {
      const empty = [];
-     for (let x=0; x<10; ++x)
-         for (let y=0; y<10; ++y)
-             if (board[y][x] === 0)
+     for (let x=0; x<20; ++x)
+         for (let y=0; y<20; ++y)
+             if ([...board[y][x]].length !== 1)
                  empty.push([x, y]);
      if (empty.length === 0)
-         return;
+         return 0;
      const [x, y] = empty[Math.floor(Math.random() * empty.length)];
      const changes = [];
-     const pool = [
-         ...neighbors(x, y)
-         .filter(cell => typeof cell === 'number')
-         .filter(cell => cell !== 0)
-         .map(elem => rules[elem])
-         .reduce(setIntersect, new Set(colors.map((e,i) => i)))
-     ];
+     const pool = [...board[y][x]];
      const val = pool[Math.floor(Math.random() * pool.length)];
-     changes.push({ x, y, val });
-     changes.forEach(({ x, y, val }) => {
-         board[y][x] = val;
-     });
+     setBoard(x, y, [val]);
+     return empty.length - 1;
  }
  let interval = null;
  function stop() {
@@ -79,7 +79,7 @@
      stop();
      interval = setInterval(() => {
          step();
-     }, 200);
+     }, 100);
  }
 </script>
 
@@ -91,7 +91,7 @@
                     <Cell
                         {colors}
                         elems="{cell}"
-                        onClick="{() => board[y][x] = new Set([selected])}"
+                        onClick="{() => setBoard(x, y, [selected])}"
                     />
                 {/each}
             </div>
@@ -121,10 +121,10 @@
      align-items: center;
      justify-content: center;
      height: 100vh;
-     font-size: calc(6vmin);
+     font-size: calc(4vmin);
  }
  .container > * {
-     margin: .5em;
+     margin: .1em;
  }
  .board {
      display: flex;

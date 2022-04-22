@@ -28,7 +28,6 @@
  .Cell {
      width: 1em;
      height: 1em;
-     border: solid white .1em;
      background-color: pink;
      display: flex;
      flex-wrap: wrap;
