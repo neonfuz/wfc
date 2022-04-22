@@ -1,9 +1,10 @@
 <script>
- const elems = [
-     '08c',
-     'cc0',
-     '0c0',
-     '080',
+ import Cell from '$lib/Cell.svelte';
+ const colors = [
+     '#08c',
+     '#cc0',
+     '#0c0',
+     '#080',
  ];
  const rules = {
      0: new Set([0, 1]),
@@ -13,7 +14,7 @@
  };
  let selected = 0;
  const board = new Array(10).fill().map(row => (
-     new Array(10).fill() //.map(_ => Math.floor(Math.random()*elems.length))
+     new Array(10).fill() //.map(_ => Math.floor(Math.random()*colors.length))
  ));
  function setIntersect(a, b) {
      return new Set([...a].filter(item => b.has(item)));
@@ -50,11 +51,11 @@
      const pool = [
          ...neighbors(x, y).filter(cell => typeof cell === 'number')
          .map(elem => rules[elem])
-         .reduce(setIntersect, new Set(elems.map((e,i) => i)))
+         .reduce(setIntersect, new Set(colors.map((e,i) => i)))
      ];
      const val = pool[Math.floor(Math.random() * pool.length)];
      changes.push({ x, y, val });
-     changes.forEach(({x, y, val}) => {
+     changes.forEach(({ x, y, val }) => {
          board[y][x] = val;
      });
  }
@@ -65,20 +66,21 @@
         {#each board as row, y}
             <div class="row">
                 {#each row as cell, x}
-                    <div class="cell"
-                         on:mousedown={() => board[y][x] = selected}
-                         style:border-color="#{elems[cell]}" />
+                    <Cell
+                        color="{colors[cell]}"
+                        onClick="{() => board[y][x] = selected}"
+                    />
                 {/each}
             </div>
         {/each}
     </div>
     <div class="palette">
-        {#each elems as elem, i}
-            <div class="cell"
-                 class:selected={selected === i}
-                 on:click={() => selected = i}
-                 style:border-color="#{elem}">
-            </div>
+        {#each colors as color, i}
+            <Cell
+                {color}
+                selected="{selected === i}"
+                onClick="{() => selected = i}"
+            />
         {/each}
     </div>
     <button on:click={step}>Step</button>
@@ -105,16 +107,5 @@
  }
  .row {
      display: flex;
- }
- .cell {
-     width: 0;
-     height: 0;
-     border: solid #888 .5em;
-     outline: solid white 3px;
-     background: #888;
- }
- .cell.selected {
-     outline: solid red 3px;
-     z-index: 1;
  }
 </style>
