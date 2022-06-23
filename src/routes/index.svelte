@@ -87,7 +87,7 @@
         {#each colors as color, i}
             <Cell
                 {colors}
-                elems={new Set([i])}
+                elems="{new Set([i])}"
                 selected="{selected === i}"
                 onClick="{() => selected = i}"
             />
