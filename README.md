@@ -1,3 +1,15 @@
+# WFC (Wave Function Collapse)
+
+After watching a few videos on Wave Function Collapse (for example [this
+one][1]) I decided to try implementing it. A live version of this app is hosted
+[HERE][2].
+
+This project is based on svelte-kit, below is the original readme with
+instructions on running / building it.
+
+[1]: https://www.youtube.com/watch?v=20KHNA9jTsE
+[2]: https://unique-daffodil-9114f1.netlify.app/
+
 # create-svelte
 
 Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
